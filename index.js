@@ -1,17 +1,16 @@
-const express = require('express')
-require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const app = express()
+const express = require("express");
+require("dotenv").config();
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 3000;
 
 // middle were
 
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
 // MongoDB
-
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.v36kmoi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -21,7 +20,7 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 async function run() {
@@ -31,30 +30,36 @@ async function run() {
 
     // Create groupsCollection
 
-    const groupsCollection = client.db('groupsDB').collection('groups')
+    const groupsCollection = client.db("groupsDB").collection("groups");
 
     // get method
 
-    app.get('/groups',async(req,res)=>{
+    app.get("/groups", async (req, res) => {
       const result = await groupsCollection.find().toArray();
-      res.send(result)
-    })
+      res.send(result);
+    });
+
+    // get method but findOne
+
+    app.get("/groups/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await groupsCollection.findOne(query);
+      res.send(result);
+    });
 
     // post method
-    app.post('/groups', async (req,res)=>{
-      const newGroup = req.body
-      const result = await groupsCollection.insertOne(newGroup)
-      res.send(result)
-    })
-
-
-
-
-
+    app.post("/groups", async (req, res) => {
+      const newGroup = req.body;
+      const result = await groupsCollection.insertOne(newGroup);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log(
+      "Pinged your deployment. You successfully connected to MongoDB!"
+    );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -62,14 +67,10 @@ async function run() {
 }
 run().catch(console.dir);
 
-
-
-
-
-app.get('/', (req, res) => {
-  res.send('My assignment is running in this server')
-})
+app.get("/", (req, res) => {
+  res.send("My assignment is running in this server");
+});
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
