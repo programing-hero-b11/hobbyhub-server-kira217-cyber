@@ -55,6 +55,22 @@ async function run() {
       res.send(result);
     });
 
+    // update method
+    app.put('/groups/:id', async(req,res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const options = { upsert: true };
+      const updateGroup = req.body
+      const updateDoc = {
+      $set: updateGroup
+    };
+    const result = await groupsCollection.updateOne(filter,updateDoc
+      ,options
+    )
+    res.send(result)
+
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
