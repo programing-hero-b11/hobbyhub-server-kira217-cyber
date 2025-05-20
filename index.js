@@ -29,6 +29,17 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    // Create groupsCollection
+
+    const groupsCollection = client.db('groupsDB').collection('groups')
+
+    // post
+    app.post('/groups',async (req,res)=>{
+      const newGroup = req.body
+      const result = groupsCollection.insertOne(newGroup)
+      res.send(result)
+    })
+
 
 
 
